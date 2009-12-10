@@ -8,20 +8,20 @@ http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=street+view:+7564+Ca
 
 import panoia.*;
 
-View v;
+View view;
 
 void setup() {
-	size(512*7,512);
+	size(screen.width,screen.width/7*3);
 	background(0);
 	noLoop();
-	v = new View("3qry8ACTZ8Mw6SQ1UaLNMg");
+	view = new View(this, 45.537734, -73.622578);
 	draw();
 }
 
 void draw() {
-	String[] urls = v.getImgURLs();
-	for(int i = 0;i < urls.length;i++) {
-		PImage img = loadImage(urls[i],"jpg");
-		image(img, 512*i, 0);
+	for(int i = 0;i < 7;i++) {
+		for(int j = 0;j < 3;j++) {
+			image(view.getPImage(i,j), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
+		}
 	}
 }
