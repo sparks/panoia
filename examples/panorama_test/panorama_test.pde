@@ -14,14 +14,14 @@ void setup() {
 	size(screen.width,screen.width/7*3);
 	background(0);
 	noLoop();
-	view = new View(this, 45.537734, -73.622578);
+	view = new View(45.537734, -73.622578);
 	draw();
 }
 
 void draw() {
 	for(int i = 0;i < 7;i++) {
-		for(int j = 0;j < 3;j++) {
-			image(view.getPImage(i,j), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
+		for(int j = 1;j < 2;j++) {
+			image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
 		}
 	}
 }
