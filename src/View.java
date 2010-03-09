@@ -43,7 +43,8 @@ public class View {
 	}
 	
 	public String getImgURL(int x, int y) {
-		return "http://maps.google.com/cbk?output=tile&zoom=3&x="+constrain(x, 0, 6)+"&y="+constrain(y, 0, 2)+"&panoid="+pano_ids[0];
+		if(pano_ids != null) return "http://maps.google.com/cbk?output=tile&zoom=3&x="+constrain(x, 0, 6)+"&y="+constrain(y, 0, 2)+"&panoid="+pano_ids[0];
+		else return null;
 	}
 	
 	public String[] getPanoIDs() {

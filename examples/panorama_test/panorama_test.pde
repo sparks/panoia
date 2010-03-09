@@ -21,7 +21,7 @@ void setup() {
 void draw() {
 	for(int i = 0;i < 7;i++) {
 		for(int j = 1;j < 2;j++) {
-			image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
+			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
 		}
 	}
 }
