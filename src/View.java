@@ -5,7 +5,7 @@ import org.w3c.dom.Document;
 
 public class View {
 		
-	float latitude, longitude;
+	float latitude, longitude, yaw;
 	
 	String[] pano_ids;
 		
@@ -16,8 +16,14 @@ public class View {
 		this.longitude = longitude;
 
 		tile_urls = new String[7][3];
-				
-		pano_ids = Panoia.getPanoIDs(latitude, longitude);
+
+		//Grabbing XML file to minimize remote file loads
+	
+		Document xml_file = Panoia.getXML(latitude, longitude);
+		
+		pano_ids = Panoia.getPanoIDs(xml_file);
+		
+		yaw = Panoia.getPanoYaw(xml_file);
 	}
 	
 	public View(String pano_id) {
@@ -28,6 +34,9 @@ public class View {
 		Document xml_file = Panoia.getXML(pano_id);
 		
 		pano_ids = Panoia.getPanoIDs(xml_file);
+		
+		yaw = Panoia.getPanoYaw(xml_file);
+	
 		float[] location = Panoia.getLatLng(xml_file);
 
 		latitude = location[0];
@@ -40,6 +49,10 @@ public class View {
 	
 	public float getLng() {
 		return longitude;
+	}
+	
+	public float getYaw() {
+		return yaw;
 	}
 	
 	public String getImgURL(int x, int y) {

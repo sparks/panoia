@@ -15,13 +15,22 @@ void setup() {
 	background(0);
 	noLoop();
 	view = new View(45.537734, -73.622578);
-	draw();
 }
 
 void draw() {
-	for(int i = 0;i < 7;i++) {
+	float yaw = view.getYaw();
+	int start = floor(yaw/(360/7));
+
+	for(int i = start;i < 7;i++) {
 		for(int j = 1;j < 2;j++) {
-			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*i, screen.width/7*j, screen.width/7, screen.width/7);
+			println(i);
+			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*(i-start), screen.width/7*j, screen.width/7, screen.width/7);
+		}
+	}
+	for(int i = 0;i < start;i++) {
+		for(int j = 1;j < 2;j++) {
+			println(i);
+			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*(i-start+7), screen.width/7*j, screen.width/7, screen.width/7);
 		}
 	}
 }

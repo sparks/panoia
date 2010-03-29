@@ -69,6 +69,28 @@ public class Panoia {
 		return null;
 	}
 	
+	public static float getPanoYaw(float latitude, float longitude) {
+		return getPanoYaw(getXML(latitude, longitude));
+	}
+	
+	public static float getPanoYaw(String pano_id) {
+		return getPanoYaw(getXML(pano_id));
+	}
+	
+	public static float getPanoYaw(Document xml_file) {
+		try {
+			NodeList proj = xml_file.getElementsByTagName("projection_properties");
+			
+			String yaw = proj.item(0).getAttributes().getNamedItem("pano_yaw_deg").getNodeValue();
+
+			return Float.parseFloat(yaw);
+		} catch(Exception e) {
+			//Probably no such street view, so ignore
+		}
+
+		return 0;		
+	}
+	
 	public static String[] getPanoIDs(float latitude, float longitude) {
 		return getPanoIDs(getXML(latitude, longitude));
 	}
