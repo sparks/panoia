@@ -69,5 +69,9 @@ public class View {
 		if (val < min) return min;
 		else return val;
 	}
-	
+
+	public boolean equals(Object o) {
+		if(o instanceof View && ((View)o).getPanoIDs()[0].equals(getPanoIDs()[0])) return true;		
+		return false;
+	}
 }
