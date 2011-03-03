@@ -9,28 +9,67 @@ http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q=street+view:+7564+Ca
 import panoia.*;
 
 View view;
+float[] yaws;
 
 void setup() {
 	size(screen.width,screen.width/7*3);
 	background(0);
 	noLoop();
+	
 	view = new View(45.537734, -73.622578);
 }
 
 void draw() {
+	background(0);
+	translate(width/2, height/2);
+	
 	float yaw = view.getYaw();
-	int start = floor(yaw/(360/7));
+	
+	PImage[] pics = new PImage[7];
+	
+	if(view.getPanoIDs() != null) {
+		for(int i = 0;i < 7;i++) pics[i] = loadImage(view.getImgURL(i,1), "jpg");
+	}
 
-	for(int i = start;i < 7;i++) {
-		for(int j = 1;j < 2;j++) {
-			println(i);
-			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*(i-start), screen.width/7*j, screen.width/7, screen.width/7);
+	int start_tile = floor((6.5-yaw/360*6.5)%6.5);
+	float offset = ((6.5-yaw/360*6.5)%6.5-start_tile)*width/6.5;
+	
+	for(int i = start_tile;i < 7;i++) {
+		if(pics[i] != null) image(pics[i], width/6.5*(i-start_tile)-width/2-offset, -width/13, width/6.5, width/6.5);
+	}
+	
+	for(int i = 0;i < start_tile+1;i++) {
+		if(pics[i] != null) image(pics[i], width/6.5*(i+7-start_tile)-width/2-width/13-offset, -width/13, width/6.5, width/6.5);
+	}
+
+	fill(255);
+	stroke(255);
+	strokeWeight(4);
+	
+	yaws();
+	
+	for(int i = 0;i < yaws.length;i++) {
+		line(yaws[i]-width/2, -height/2, yaws[i]-width/2, height/2);
+	}
+}
+
+void mousePressed() {
+	for(int i = 0;i < yaws.length;i++) {
+		if(abs(mouseX-yaws[i]) < 200) {
+			view = new View(view.getLinkIDs()[i]);
+			redraw();
+			return;
 		}
 	}
-	for(int i = 0;i < start;i++) {
-		for(int j = 1;j < 2;j++) {
-			println(i);
-			if(view.getPanoIDs() != null) image(loadImage(view.getImgURL(i,j), "jpg"), screen.width/7*(i-start+7), screen.width/7*j, screen.width/7, screen.width/7);
-		}
+}
+
+void yaws() {
+	yaws = null;
+	while(yaws == null) {
+		yaws = view.getLinkYaws();
+		Thread.yield();
+	}
+	for(int i = 0;i < yaws.length;i++) {
+		yaws[i] = map(yaws[i], 0, 360, 0, width);
 	}
 }

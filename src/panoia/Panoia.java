@@ -102,14 +102,11 @@ public class Panoia {
 	public static String[] getPanoIDs(Document xml_file) {
 		try {
 			NodeList data = xml_file.getElementsByTagName("data_properties");
-			NodeList links = xml_file.getElementsByTagName("link");
 
-			String[] pano_ids = new String[links.getLength()+1];
+			String[] pano_ids = new String[data.getLength()];
 
-			pano_ids[0] = data.item(0).getAttributes().getNamedItem("pano_id").getNodeValue();
-		
-			for(int i = 0;i < links.getLength();i++) {
-				pano_ids[i+1] = links.item(i).getAttributes().getNamedItem("pano_id").getNodeValue();
+			for(int i = 0;i < data.getLength();i++) {
+				pano_ids[i] = data.item(i).getAttributes().getNamedItem("pano_id").getNodeValue();
 			}
 			
 			return pano_ids;
@@ -120,4 +117,55 @@ public class Panoia {
 		return null;		
 	}
 	
+	public static String[] getLinkIDs(float latitude, float longitude) {
+		return getLinkIDs(getXML(latitude, longitude));
+	}
+	
+	public static String[] getLinkIDs(String pano_id) {
+		return getLinkIDs(getXML(pano_id));
+	}
+	
+	public static String[] getLinkIDs(Document xml_file) {
+		try {
+			NodeList link = xml_file.getElementsByTagName("link");
+
+			String[] link_ids = new String[link.getLength()];
+
+			for(int i = 0;i < link.getLength();i++) {
+				link_ids[i] = link.item(i).getAttributes().getNamedItem("pano_id").getNodeValue();
+			}
+			
+			return link_ids;
+		} catch(Exception e) {
+			//Probably no such street view, so ignore
+		}
+
+		return null;		
+	}
+	
+	public static float[] getLinkYaws(float latitude, float longitude) {
+		return getLinkYaws(getXML(latitude, longitude));
+	}
+	
+	public static float[] getLinkYaws(String pano_id) {
+		return getLinkYaws(getXML(pano_id));
+	}
+	
+	public static float[] getLinkYaws(Document xml_file) {
+		try {
+			NodeList link = xml_file.getElementsByTagName("link");
+
+			float[] link_yaws = new float[link.getLength()];
+
+			for(int i = 0;i < link.getLength();i++) {
+				link_yaws[i] = Float.parseFloat(link.item(i).getAttributes().getNamedItem("yaw_deg").getNodeValue());
+			}
+			
+			return link_yaws;
+		} catch(Exception e) {
+			//Probably no such street view, so ignore
+		}
+
+		return null;		
+	}
 }

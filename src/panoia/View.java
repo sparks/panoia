@@ -11,6 +11,9 @@ public class View {
 		
 	String[][] tile_urls;
 	
+	String[] link_ids;
+	float[] link_yaws;
+	
 	public View(float latitude, float longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -24,6 +27,9 @@ public class View {
 		pano_ids = Panoia.getPanoIDs(xml_file);
 		
 		yaw = Panoia.getPanoYaw(xml_file);
+		
+		link_ids = Panoia.getLinkIDs(xml_file);
+		link_yaws = Panoia.getLinkYaws(xml_file);
 	}
 	
 	public View(String pano_id) {
@@ -53,6 +59,14 @@ public class View {
 	
 	public float getYaw() {
 		return yaw;
+	}
+	
+	public String[] getLinkIDs() {
+		return link_ids;
+	}
+	
+	public float[] getLinkYaws() {
+		return link_yaws;
 	}
 	
 	public String getImgURL(int x, int y) {
