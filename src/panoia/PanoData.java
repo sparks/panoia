@@ -2,12 +2,12 @@ package panoia;
 
 public class PanoData {
 
-	String copyright;
+	public String copyright;
 
-	PanoLink[] links;
+	public PanoLink[] links;
 
-	PanoLocation location;
-	PanoTileData tiles;
+	public PanoLocation location;
+	public PanoTileData tiles;
 
 	public PanoData(PanoLocation location, PanoTileData tiles, PanoLink[] links, String copyright) {
 		this.location = location;

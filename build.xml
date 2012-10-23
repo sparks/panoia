@@ -6,7 +6,7 @@
 <project name="panoia" basedir="." default="main">
 
 	<property name="processing.dir" value="/Applications/Processing.app/Contents/Resources/Java/"/>
-	<property name="lib.dir" value="/Users/Admin/Projects/processing/libraries/"/>
+	<property name="lib.dir" value="/Users/sparky/Projects/processing/libraries/"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
