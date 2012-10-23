@@ -3,12 +3,12 @@ import java.util.*;
 
 public class CarAccident {
 	
-	public double Latitude;
-	public double Longitude;
+	public Double Latitude;
+	public Double Longitude;
 	
-	public CarAccident(String[] elements) {
-		Latitude = Double.parseDouble(elements[15]);
-		Longitude = Double.parseDouble(elements[16]);
+	public CarAccident(double lat, double lon) {
+		Latitude = lat;
+		Longitude = lon;
 	}
 	
 	public static ArrayList<CarAccident> ParseCsv() {
@@ -28,9 +28,15 @@ public class CarAccident {
 				StringTokenizer st = new StringTokenizer(line, ";");
 				while (st.hasMoreTokens()) {
 					data[col] = st.nextToken();
+					//data[col] = "4.44444444";
+					//System.out.println(st.nextToken());
 					col++;
 				}
-				carAccidents.add(new CarAccident(data));
+				
+				double lat = parseDouble(data[15]);
+				double lon = parseDouble(data[16]);
+				
+				carAccidents.add(new CarAccident(lat, lon));
 				col = 0;
 			}
 		
@@ -39,6 +45,18 @@ public class CarAccident {
 		}
 		
 		return carAccidents;
+	}
+	
+	private static Double parseDouble(String number) {
+		Double dub;
+		
+		try {
+			dub = Double.parseDouble(number);
+		} catch (Exception e) {
+			dub = 666.666;
+		}
+		
+		return dub;
 	}
 	
 }

@@ -9,7 +9,6 @@ public class DataVis extends PApplet {
 	PFont font;
 	
 	ArrayList<CarAccident> carAccidents;
-	Double randomLat;
 
 	public void setup() {
 		size(displayWidth, displayHeight);
@@ -20,7 +19,6 @@ public class DataVis extends PApplet {
 		font = createFont("Arial", 16, true);
 		
 		carAccidents = CarAccident.ParseCsv();
-		randomLat = carAccidents.get((int)(carAccidents.size() * Math.random())).Latitude;
 	}
 
 	public void draw() {
@@ -30,7 +28,7 @@ public class DataVis extends PApplet {
 		textFont(font, 16);
 		fill(255);
 		textAlign(CENTER);
-		text(randomLat.toString(), 0, 0);
+		text(carAccidents.get(2).Latitude.toString(), 0, 0);
 	}
 
 	public void mousePressed() {
