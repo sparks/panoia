@@ -24,14 +24,19 @@ public class DataVis extends PApplet {
 	public void draw() {
 		background(0);
 
-		CarAccident test = carAccidents.get(2);
+		/*
+		CarAccident test = carAccidents.get(1);
 		
 		textFont(font, 16);
 		fill(255);
 		textAlign(LEFT);
-		//text(test.Latitude.toString(), 10, 20);
-		//text(test.Longitude.toString(), 10, 60);
-		test.draw(45.5, 73.6, 1600, 900, 180, 90, 90);
+		text(test.Latitude.toString(), 10, 20);
+		text(test.Longitude.toString(), 10, 60);
+		*/
+		
+		for (CarAccident accident : carAccidents) {
+			accident.draw(45.5, -73.6, 1600, 900, 180, 90, 0);
+		}
 	}
 
 	public void mousePressed() {
