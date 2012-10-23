@@ -1,17 +1,48 @@
 import java.io.*;
 import java.util.*;
+import processing.core.*;
 
 public class CarAccident {
 	
 	public Double Latitude;
 	public Double Longitude;
 	
-	public CarAccident(double lat, double lon) {
+	private DataVis parent;
+	
+	public CarAccident(DataVis parent, double lat, double lon) {
+		this.parent = parent;
+		
 		Latitude = lat;
 		Longitude = lon;
 	}
 	
-	public static ArrayList<CarAccident> ParseCsv() {
+	public void draw(double latitude, double longitude, int pixelWidth, int pixelHeight, double angleWidth, double angleHeight, double headingCenter) {
+		
+		PVector diff = new PVector((float)(Latitude - latitude), (float)(Longitude - longitude));
+		float length = (float)Math.sqrt(Math.pow(diff.x, 2) + Math.pow(diff.y, 2));
+		float orientation = (float)(Math.atan2(diff.y, diff.x) * 180 / Math.PI);
+		
+		float relativeAngle = (float)(orientation - headingCenter);
+		while (relativeAngle < 0)
+			relativeAngle += 360;
+		
+		int xPos = (int)(pixelWidth * (relativeAngle / angleWidth)); // This probably doesn't work as expected...
+		int yPos = (int)(pixelHeight / 2 + (pixelHeight / (2 * length))); // Approximating horizon to be at half-screen height.
+		
+		if (length < 1)
+			length = 1;
+		
+		//System.out.println(diff.x + "  " + diff.y);
+		//System.out.println(xPos);
+		//System.out.println(yPos);
+		
+		parent.stroke(128);
+		parent.fill(255);
+		parent.ellipseMode(parent.CENTER);
+		parent.ellipse(xPos, yPos, 100, 100 / length);
+	}
+	
+	public static ArrayList<CarAccident> ParseCsv(DataVis parent) {
 		
 		ArrayList<CarAccident> carAccidents = new ArrayList<CarAccident>();
 		String[] data = new String[29];
@@ -36,7 +67,7 @@ public class CarAccident {
 				double lat = parseDouble(data[15]);
 				double lon = parseDouble(data[16]);
 				
-				carAccidents.add(new CarAccident(lat, lon));
+				carAccidents.add(new CarAccident(parent, lat, lon));
 				col = 0;
 			}
 		

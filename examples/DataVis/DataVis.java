@@ -18,17 +18,20 @@ public class DataVis extends PApplet {
 		
 		font = createFont("Arial", 16, true);
 		
-		carAccidents = CarAccident.ParseCsv();
+		carAccidents = CarAccident.ParseCsv(this);
 	}
 
 	public void draw() {
 		background(0);
-		translate(width/2, height/2);
 
+		CarAccident test = carAccidents.get(2);
+		
 		textFont(font, 16);
 		fill(255);
-		textAlign(CENTER);
-		text(carAccidents.get(2).Latitude.toString(), 0, 0);
+		textAlign(LEFT);
+		//text(test.Latitude.toString(), 10, 20);
+		//text(test.Longitude.toString(), 10, 60);
+		test.draw(45.5, 73.6, 1600, 900, 180, 90, 90);
 	}
 
 	public void mousePressed() {
