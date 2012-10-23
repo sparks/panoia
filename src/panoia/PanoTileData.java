@@ -14,7 +14,7 @@ public class PanoTileData {
 	}
 
 	public String getTileUrl(int zoom, int tileX, int tileY) {
-		return "http://maps.google.com/cbk?output=tile&panoid="+location.pano+"&zoom="+zoom+"&x="+x+"&y="+y;
+		return "http://maps.google.com/cbk?output=tile&panoid="+location.pano+"&zoom="+zoom+"&x="+tileX+"&y="+tileY;
 	}
 
 }

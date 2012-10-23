@@ -6,8 +6,8 @@ public class PanoData {
 
 	PanoLink[] links;
 
-	PanoLocation location
-	PanoTileData tiles
+	PanoLocation location;
+	PanoTileData tiles;
 
 	public PanoData(PanoLocation location, PanoTileData tiles, PanoLink[] links, String copyright) {
 		this.location = location;

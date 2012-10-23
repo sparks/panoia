@@ -1,8 +1,8 @@
 package panoia;
 
-public interface PanoProvdier {
+public interface PanoProvider {
 
-	public PanoData getPanoData(Sting pano);
+	public PanoData getPanoData(String pano);
 
 	public PanoData getPanoData(LatLng lagLng);
 

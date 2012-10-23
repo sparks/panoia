@@ -40,7 +40,7 @@ public class Pano {
 		data = provider.getPanoData(latLng);
 	}
 
-	public void setPov(StreetViewPov pov) {
+	public void setPov(PanoPov pov) {
 		this.pov = pov;
 		//Adjust field of view??
 	}

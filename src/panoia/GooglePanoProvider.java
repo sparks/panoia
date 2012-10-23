@@ -18,18 +18,18 @@ public class GooglePanoProvider implements PanoProvider {
 	}
 
 	public GooglePanoProvider(String apikey) {
+		this.apikey = apikey;
+	}
+
+	public PanoData getPanoData(String pano) {
 		return buildPanoData(getXML(pano));
 	}
 
-	public PanoData getPanoData(Sting pano) {
-		return buildPanoData(getXML(pano));
+	public PanoData getPanoData(LatLng latLng) {
+		return buildPanoData(getXML(latLng));
 	}
 
-	public PanoData getPanoData(LatLng lagLng) {
-		return null;
-	}
-
-	void buildPanoData(Document xml) {
+	PanoData buildPanoData(Document xml) {
 		try {
 			//Parse Location Information and Copyright
 			Node data = xml.getElementsByTagName("data_properties").item(0);
@@ -41,25 +41,25 @@ public class GooglePanoProvider implements PanoProvider {
 			String pano = data.getAttributes().getNamedItem("pano_id").getNodeValue();
 			
 			Node descNode = xml.getElementsByTagName("text").item(0);
-			String desc = descNode.getValue();
+			String desc = descNode.getNodeValue();
 
 			PanoLocation location = new PanoLocation(pano, latLng, desc);
 
 			//Parse Tiles
 			Node proj = xml.getElementsByTagName("projection_properties").item(0);
-			String heading = proj.getAttributes().getNamedItem("pano_yaw_deg").getNodeValue();
+			float heading = Float.parseFloat(proj.getAttributes().getNamedItem("pano_yaw_deg").getNodeValue());
 
 			PanoTileData tiles = new PanoTileData(location, heading);
 
 			//Parse links
-			NodeList linksNodes = xml.getElementsByTagName("link");
-			PanoLinks[] links = new PanoLinks[linksNodes.getLength()];
+			NodeList linkNodes = xml.getElementsByTagName("link");
+			PanoLink[] links = new PanoLink[linkNodes.getLength()];
 
-			for(int i = 0;i < linksNodes.getLength();i++) {
+			for(int i = 0;i < linkNodes.getLength();i++) {
 				Node node = linkNodes.item(i);
 
 				String linkPano = node.getAttributes().getNamedItem("pano_id").getNodeValue();
-				float linkHeading = node.getAttributes().getNamedItem("yaw_deg").getNodeValue();
+				float linkHeading = Float.parseFloat(node.getAttributes().getNamedItem("yaw_deg").getNodeValue());
 				String linkDesc = node.getFirstChild().getNodeValue();
 
 				links[i] = new PanoLink(linkPano, linkHeading, linkDesc);
@@ -67,24 +67,25 @@ public class GooglePanoProvider implements PanoProvider {
 
 			//Copyright
 			Node copyNode = xml.getElementsByTagName("copyright").item(0);
-			String copyright = copyNode.getValue();
+			String copyright = copyNode.getNodeValue();
 
 			//Put it all together
-			PanoData data = new PanoData(location, tiles, links, copyright);
+			return new PanoData(location, tiles, links, copyright);
 		} catch(Exception e) {
 			//Probably no such street view, so ignore
+			return null;
 		}
 
 	}
 
-	public static Document getXML(LatLng latLng) {
+	public Document getXML(LatLng latLng) {
 		try	{
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
-			String url_string = "http://maps.google.com/cbk?output=xml&ll="+latLng.toUrlValue();
-			if(key != null && !key.equals("")) url_string
-			URL url = new URL();
+			String urlString = "http://maps.google.com/cbk?output=xml&ll="+latLng.toUrlValue();
+			if(apikey != null && !apikey.equals("")) urlString += "&key="+apikey;
+			URL url = new URL(urlString);
 
 			InputStream stream = url.openStream();
 			Document xml = docBuilder.parse(stream);
@@ -97,12 +98,15 @@ public class GooglePanoProvider implements PanoProvider {
 		return null;
 	}
 	
-	public static Document getXML(String pano) {
+	public Document getXML(String pano) {
 		try	{
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
-			URL url = new URL("http://maps.google.com/cbk?output=xml&panoid="+pano);
+
+			String urlString = "http://maps.google.com/cbk?output=xml&panoid="+pano;
+			if(apikey != null && !apikey.equals("")) urlString += "&key="+apikey;
+			URL url = new URL(urlString);
 
 			InputStream stream = url.openStream();
 			Document xml = docBuilder.parse(stream);
