@@ -45,11 +45,9 @@ public class PanoProvider {
 
 			PanoLocation location = new PanoLocation(pano, latLng, desc);
 
-			//Parse Tiles
+			//Parse Tiles Heading
 			Node proj = xml.getElementsByTagName("projection_properties").item(0);
 			float heading = Float.parseFloat(proj.getAttributes().getNamedItem("pano_yaw_deg").getNodeValue());
-
-			PanoTileData tiles = new PanoTileData(location, heading);
 
 			//Parse links
 			NodeList linkNodes = xml.getElementsByTagName("link");
@@ -70,7 +68,7 @@ public class PanoProvider {
 			String copyright = copyNode.getNodeValue();
 
 			//Put it all together
-			return new PanoData(location, tiles, links, copyright);
+			return new PanoData(location, links, heading, copyright, apikey);
 		} catch(Exception e) {
 			//Probably no such street view, so ignore
 			return null;

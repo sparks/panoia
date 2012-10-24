@@ -17,8 +17,4 @@ public class PanoTileData {
 		return "http://maps.google.com/cbk?output=tile&panoid="+location.pano+"&zoom="+zoom+"&x="+tileX+"&y="+tileY;
 	}
 
-	public PImage getTile(int zoom, int tileX, int tileY) {
-
-	}
-
 }
