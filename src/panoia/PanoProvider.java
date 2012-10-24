@@ -71,6 +71,7 @@ public class PanoProvider {
 			return new PanoData(location, links, heading, copyright, apikey);
 		} catch(Exception e) {
 			//Probably no such street view, so ignore
+			System.err.println("Panoia: Error no such streetview or malformed streetview...");
 			return null;
 		}
 

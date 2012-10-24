@@ -3,23 +3,24 @@ import java.io.*;
 import java.util.*;
 import processing.core.*;
 
-public class CarAccident {
+public class BikeAccident {
 	
 	public LatLng latLng;
-	
+	public String desc;
+
 	private PApplet parent;
 	
-	public CarAccident(PApplet parent, LatLng latLng) {
+	public BikeAccident(PApplet parent, LatLng latLng, String desc) {
 		this.parent = parent;
 		this.latLng = latLng;
 	}
 	
-	public static ArrayList<CarAccident> ParseCsv(PApplet parent) {
-		ArrayList<CarAccident> carAccidents = new ArrayList<CarAccident>();
+	public static ArrayList<BikeAccident> ParseCsv(PApplet parent) {
+		ArrayList<BikeAccident> bikeAccidents = new ArrayList<BikeAccident>();
 		String[] data = new String[29];
-
+		int errorCount = 0;
 		try {
-			File file = new File("CarCrashes2007.csv");
+			File file = new File("BikeAccidents.csv");
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
 			String line = reader.readLine(); // Skip the first one with title info
@@ -34,27 +35,33 @@ public class CarAccident {
 					//System.out.println(st.nextToken());
 					col++;
 				}
+				
 				try {
-					float lat = Float.parseFloat(data[15]);
-					float lng = Float.parseFloat(data[16]);
+					float lat = Float.parseFloat(data[7]);
+					float lng = Float.parseFloat(data[6]);
 
 					LatLng latLng = new LatLng(lat, lng);
 
-					carAccidents.add(new CarAccident(parent, latLng));
+					String desc = data[2].trim()+" at "+data[3].trim()+" "+data[4].trim()+"/"+data[5].trim();
+
+					bikeAccidents.add(new BikeAccident(parent, latLng, desc));
 				} catch(Exception e) {
 					// System.err.println(data[15]+" - "+data[16]);
 					// System.err.println("Error parsing CSV for car accidents");
 					// System.err.println(e);
+					errorCount++;
 				}
 
 				col = 0;
 			}
 
+			System.out.println(errorCount);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return carAccidents;
+		return bikeAccidents;
 	}
 	
 }

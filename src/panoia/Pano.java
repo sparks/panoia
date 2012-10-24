@@ -27,6 +27,18 @@ public class Pano {
 		return data.links;
 	}
 
+	public void jump() {
+		PanoLink closest = data.links[0];
+		for(int i = 0;i < data.links.length;i++) {
+			if(p.abs(closest.heading-pov.heading()) > p.abs(data.links[i].heading-pov.heading())) {
+				closest = data.links[i];
+			}
+		}
+
+		setPano(closest.pano);
+	}
+
+
 	public String getPano() {
 		return data.location.pano;
 	}
@@ -71,16 +83,24 @@ public class Pano {
 		return data;
 	}
 
-	public void drawThreeFold(float heading, int imageWidth) {
+	public int headingToPixel(float heading, float fov, int imageWidth) {
+		float adjHeading = heading-pov.heading();
+		while(adjHeading < -180) adjHeading += 360;
+		while(adjHeading > 180) adjHeading -= 360;
+
+		return (int)(imageWidth/2+(adjHeading)/fov*imageWidth);
+	}
+
+	public void drawThreeFold(int imageWidth) {
 		for(int i = 0;i < 3;i++) {
 			if(threeFoldCache[i] == null) {
-				threeFoldCache[i] = p.loadImage(data.getStaticUrl(640, 480, 90*(i-1)+heading, 0, 90), "jpg");
+				threeFoldCache[i] = p.loadImage(data.getStaticUrl(640, 480, 90*(i-1)+pov.heading(), 0, 90), "jpg");
 			}
 			p.image(threeFoldCache[i], imageWidth/3*(i-1)-imageWidth/6, 0, imageWidth/3, imageWidth*480/3/640);
 		}
 	}
 
-	public void drawTiles(float heading, float fov, int imageWidth) {
+	public void drawTiles(float fov, int imageWidth) {
 		int xTiles = 7;
 		int yTiles = 3;
 		float overlap = 0.5f;
@@ -88,7 +108,7 @@ public class Pano {
 		float carTile = 3.25f;
 		int tileSize = (int)(imageWidth/(wrapTile*fov/360));
 
-		float targetHeading = mod(data.centerHeading-heading, 360);
+		float targetHeading = mod(data.centerHeading-pov.heading(), 360);
 
 		float centerTile = mod(carTile-targetHeading/360*wrapTile, wrapTile);
 		float povTileLen = fov/360*wrapTile;
@@ -98,7 +118,7 @@ public class Pano {
 
 		int startIndex = p.floor(startTile);	
 
-		for(int i = 0;i <= p.ceil(povTileLen);i++) {
+		for(int i = 0;i <= p.ceil(povTileLen)+1;i++) {
 			// for(int j = 0;j < yTiles;j++) {
 			for(int j = 1;j < 2;j++) {
 				if(tileCache[(i+startIndex)%xTiles][j] == null) {
