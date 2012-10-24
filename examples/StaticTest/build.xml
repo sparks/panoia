@@ -1,4 +1,4 @@
-<project name="PanoramaTest" basedir="." default="main">
+<project name="StaticTest" basedir="." default="main">
 
 	<property name="panoia.dir" value="../../"/>
 	

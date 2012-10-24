@@ -12,6 +12,7 @@ public class Pano {
 	PanoPov pov;
 
 	PImage[][] tileCache;
+	PImage[] threeFoldCache;
 
 	public Pano(PApplet p) {
 		this.p = p;
@@ -19,6 +20,7 @@ public class Pano {
 		pov = new PanoPov();
 
 		tileCache = new PImage[7][3];
+		threeFoldCache = new PImage[3];
 	}
 
 	public PanoLink[] getLinks() {
@@ -44,6 +46,9 @@ public class Pano {
 				tileCache[i][j] = null;
 			}
 		}
+		for(int i = 0;i < 3;i++) {
+			threeFoldCache[i] = null;
+		}
 	}
 
 	public void setPosition(LatLng latLng) {
@@ -53,6 +58,9 @@ public class Pano {
 				tileCache[i][j] = null;
 			}
 		}
+		for(int i = 0;i < 3;i++) {
+			threeFoldCache[i] = null;
+		}
 	}
 
 	public void setPov(PanoPov pov) {
@@ -61,6 +69,15 @@ public class Pano {
 
 	public PanoData getPanoData() {
 		return data;
+	}
+
+	public void drawThreeFold(float heading, int imageWidth) {
+		for(int i = 0;i < 3;i++) {
+			if(threeFoldCache[i] == null) {
+				threeFoldCache[i] = p.loadImage(data.getStaticUrl(640, 480, 90*(i-1)+heading, 0, 90), "jpg");
+			}
+			p.image(threeFoldCache[i], imageWidth/3*(i-1)-imageWidth/6, 0, imageWidth/3, imageWidth*480/3/640);
+		}
 	}
 
 	public void drawTiles(float heading, float fov, int imageWidth) {

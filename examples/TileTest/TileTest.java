@@ -1,7 +1,7 @@
 import panoia.*;
 import processing.core.*;
 
-public class PanoramaTest extends PApplet {
+public class TileTest extends PApplet {
 
 	Pano pano;
 	float angleOffset;
@@ -10,7 +10,7 @@ public class PanoramaTest extends PApplet {
 	float fov = 270;
 
 	public void setup() {
-		size(displayWidth, (int)(displayWidth/(6.5f*360/360)));
+		size(displayWidth, (int)(displayWidth/(6.5f*fov/360)));
 
 		background(0);
 		
@@ -25,19 +25,19 @@ public class PanoramaTest extends PApplet {
 
 		pushMatrix();
 		translate(width/2, 0);
-		pano.drawTiles(-angleOffset, 360, displayWidth);
+		pano.drawTiles(-angleOffset, fov, displayWidth);
 		stroke(255);
 		line(-width/2, 0, -width/2, height);
 		line(width/2, 0, width/2, height);
 		popMatrix();
 
-		angleOffset = map(mouseX, 0, width, -180, 180);
+		angleOffset = map(mouseX, 0, width, -fov/2, fov/2);
 
 		stroke(255);
 		for(int i = 0;i < links.length;i++) {
 			float heading = links[i].heading;
 			if(heading > 180) heading -= 360;
-			int xpos = (int)((3.25f+(heading+angleOffset)/360*6.5f)*displayWidth/6.5f);
+			int xpos = (int)((3.25f+(heading+angleOffset)/fov*6.5f)*displayWidth/6.5f);
 			line(xpos, 0, xpos, height);
 		}
 
@@ -61,6 +61,6 @@ public class PanoramaTest extends PApplet {
 	}
 
 	public static void main (String [] args) {
-		PApplet.main(new String[] { "PanoramaTest" });
+		PApplet.main(new String[] { "TileTest" });
 	}
 }
