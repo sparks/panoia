@@ -1,6 +1,6 @@
-rtER
+rtER: Real-Time Emergency Response
 =======
-Real-Time Emergency Response: a project for the [Mozilla Ignite Challenge](https://mozillaignite.org/)
+*a project for the [Mozilla Ignite Challenge](https://mozillaignite.org/)*
 
 Description
 -----------
