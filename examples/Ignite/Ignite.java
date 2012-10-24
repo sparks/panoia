@@ -1,13 +1,16 @@
 import panoia.*;
 import processing.core.*;
+import java.io.*;
+import java.util.*;
 
-public class StaticTest extends PApplet {
+public class Ignite extends PApplet {
 
 	Pano pano;
 	float angleOffset;
 	PanoLink[] links;
 
 	float fov = 270;
+	ArrayList<CarAccident> carAccidents;
 
 	public void setup() {
 		size(displayWidth, (int)(displayWidth/(6.5f*fov/360)));
@@ -19,6 +22,10 @@ public class StaticTest extends PApplet {
 		pano.setPosition(new LatLng(45.537734f, -73.622578f));
 
 		links = pano.getLinks();
+
+		smooth();
+				
+		carAccidents = CarAccident.ParseCsv(this);
 	}
 
 	public void draw() {
@@ -44,6 +51,10 @@ public class StaticTest extends PApplet {
 
 		stroke(255, 0, 0);
 		line(width/2, 0, width/2, height);
+
+		for (CarAccident accident : carAccidents) {
+			accident.draw(pano.getPosition().lat, pano.getPosition().lng, width, height, 270, 90, -angleOffset);
+		}
 	}
 
 	public void keyPressed() {
@@ -62,6 +73,6 @@ public class StaticTest extends PApplet {
 	}
 
 	public static void main (String [] args) {
-		PApplet.main(new String[] { "StaticTest" });
+		PApplet.main(new String[] { "Ignite" });
 	}
 }
