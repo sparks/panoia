@@ -14,11 +14,16 @@ public class Ignite extends PApplet {
 	ArrayList<CarAccident> carAccidents;
 	ArrayList<BikeAccident> bikeAccidents;
 
+	PFont font;
+
 	public void setup() {
 		size(displayWidth, (int)(displayWidth/(6.5f*fov/360)));
 		// size(1024*3, 768);
 
 		background(0);
+
+		font = createFont("Helvetica", 14);
+		textFont(font, 14);
 
 		pano = new Pano(this);
 		pov = pano.getPov();
@@ -42,9 +47,6 @@ public class Ignite extends PApplet {
 	public void draw() {
 		background(0);
 
-		fill(255);
-		stroke(255);
-
 		pushMatrix();
 		translate(width/2, 0);
 		// pano.drawThreeFold(width);
@@ -55,14 +57,14 @@ public class Ignite extends PApplet {
 		for(CarAccident accident : carAccidents) {
 			stroke(0, alpha);
 			fill(0, 100, 0, alpha);
-			project(accident.latLng, 500);
+			project(accident.latLng, accident.toString(), 500);
 		}
 
 		alpha = 255;
 		for(BikeAccident accident : bikeAccidents) {
 			stroke(0, alpha);
 			fill(0, 100, 0, alpha);
-			project(accident.latLng, 500);
+			project(accident.latLng, accident.toString(), 500);
 		}
 
 		drawPanoLinks();
@@ -92,7 +94,11 @@ public class Ignite extends PApplet {
 		}
 	}
 
-	public void project(LatLng point, int size) {
+	public boolean project(LatLng point, int size) {
+		return project(point, null, size);
+	}
+
+	public boolean project(LatLng point, String desc, int size) {
 		int x = pano.headingToPixel((float)pano.getPosition().getInitialBearing(point), fov, width);
 		// line(x, 0, x, height);
 
@@ -100,12 +106,31 @@ public class Ignite extends PApplet {
 		// int horizonHeight = 2*height/5;
 		int horizonHeight = height/2;
 		double dis = pano.getPosition().getDistance(point);
-		if(dis > 200) return;
-		if(dis < 5) return;
+		if(dis > 50) return false;
+		if(dis < 5) return false;
 		double vert = Math.atan(dis/tanFactor*Math.PI);
 		int y = (int)(height-vert/Math.PI*2*horizonHeight);
 
 		ellipse(x, y, (int)(size/dis), (int)(size*(Math.PI/2-vert)/Math.PI/dis));
+
+		if(desc != null) {
+			int padding = 10;
+			int xOff = 30;
+			int yOff = -130;
+			int xSize = 200;
+			int ySize = 75;
+			int x2 = constrain(x+xOff, 0, width-xSize);
+			int y2 = constrain(y+yOff, ySize, height);
+			fill(0, 100);
+			stroke(0);
+			line(x, y, x2, y2);
+			rect(x2, y2, xSize, ySize);
+			fill(255);
+			stroke(255);
+			text(desc, x2+padding, y2+padding, xSize-padding, ySize-padding);
+		}
+
+		return true;
 	}
 
 	public static void main (String [] args) {
