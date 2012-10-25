@@ -135,6 +135,23 @@ public class Pano {
 		}
 	}
 
+	public void drawRoads() {
+		PanoLink[] links = data.links;
+		for(int i = 0;i < links.length;i++) {
+			int x = headingToPixel(links[i].heading, data.centerHeading, p.width);
+			p.fill(255, 50);
+			p.stroke(255, 50);
+			float squish = 4.5f;
+			p.quad(
+				x+p.width/14/squish, p.height/2+30, 
+				x-p.width/14/squish, p.height/2+30, 
+				x-p.width/14, p.height, 
+				x+p.width/14, p.height
+			);
+
+		}
+	}
+
 	float mod(float v, float max) {
 		if(v == max) return 0;
 		while(v < 0) v += max;

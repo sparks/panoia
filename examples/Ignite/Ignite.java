@@ -68,6 +68,8 @@ public class Ignite extends PApplet {
 		}
 
 		drawPanoLinks();
+		
+		pano.drawRoads();
 
 		//Mouse Ref Lin
 		stroke(255, 0, 0);
