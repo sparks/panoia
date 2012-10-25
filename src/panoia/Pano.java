@@ -77,6 +77,9 @@ public class Pano {
 
 	public void setPov(PanoPov pov) {
 		this.pov = pov;
+		for(int i = 0;i < 3;i++) {
+			threeFoldCache[i] = null;
+		}
 	}
 
 	public PanoData getPanoData() {
@@ -96,7 +99,9 @@ public class Pano {
 			if(threeFoldCache[i] == null) {
 				threeFoldCache[i] = p.loadImage(data.getStaticUrl(640, 480, 90*(i-1)+pov.heading(), 0, 90), "jpg");
 			}
-			p.image(threeFoldCache[i], imageWidth/3*(i-1)-imageWidth/6, 0, imageWidth/3, imageWidth*480/3/640);
+			if(threeFoldCache[i] != null) {
+				p.image(threeFoldCache[i], imageWidth/3*(i-1)-imageWidth/6, 0, imageWidth/3, imageWidth*480/3/640);
+			}
 		}
 	}
 
@@ -124,12 +129,14 @@ public class Pano {
 				if(tileCache[(i+startIndex)%xTiles][j] == null) {
 					tileCache[(i+startIndex)%xTiles][j] = p.loadImage(data.getTileUrl(3,(i+startIndex)%xTiles,j), "jpg");
 				}
-				if(i+startIndex < xTiles) {
-					p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*i-offsetX, 0, tileSize, tileSize);
-					// p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*i-offsetX, tileSize*j, tileSize, tileSize);
-				} else {
-					p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*(i-overlap)-offsetX, 0, tileSize, tileSize);
-					// p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*(i-overlap)-offsetX, tileSize*j, tileSize, tileSize);
+				if(tileCache[(i+startIndex)%xTiles][j] != null) {
+					if(i+startIndex < xTiles) {
+						p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*i-offsetX, 0, tileSize, tileSize);
+						// p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*i-offsetX, tileSize*j, tileSize, tileSize);
+					} else {
+						p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*(i-overlap)-offsetX, 0, tileSize, tileSize);
+						// p.image(tileCache[(i+startIndex)%xTiles][j], tileSize*(i-overlap)-offsetX, tileSize*j, tileSize, tileSize);
+					}
 				}
 			}
 		}
