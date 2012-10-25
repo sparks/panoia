@@ -1,4 +1,4 @@
-<project name="Ignite" basedir="." default="main">
+<project name="PanoTest" basedir="." default="main">
 
 	<property name="panoia.dir" value="../../"/>
 	
