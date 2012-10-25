@@ -1,6 +1,6 @@
 Panioa
 =======
-A Google Street View library for Processing.
+A Paranoid Street-View library for Processing.
 
 Description
 -----------

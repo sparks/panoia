@@ -1,7 +1,7 @@
 import panoia.*;
+
 import java.io.*;
 import java.util.*;
-import processing.core.*;
 
 public class Interpolate extends PApplet {
 	boolean debug = true;
