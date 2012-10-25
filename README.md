@@ -1,13 +1,12 @@
-rtER: Real-Time Emergency Response
+Panioa
 =======
-*a project for the [Mozilla Ignite Challenge](https://mozillaignite.org/)*
+A Google Street View library for Processing.
 
 Description
 -----------
-This project deals with the detection, observation, and assessment of situations requiring intervention by emergency responders, offering them access to high-quality "live" data that may be visualized effectively both by responders in-situ and by remote operators in dedicated control rooms. Its components will include multimodal data registration, interactive visualization capabilities, and live streaming of the integrated contents, potentially obtained from a wide range of heterogeneous acquisition devices, including multispectral imaging devices and handheld smartphones.
+Panoia follows the design of the Google Maps v3 API for StreetView. It provides access both to the [Static Tile API](https://developers.google.com/maps/documentation/streetview/) and to the underlying raw tiles that can be used to create arbitrarily large scenes just like the [Maps API](https://developers.google.com/maps/documentation/javascript/reference#StreetViewTileData). The static tiles have been corrected for the spherical projections while the raw tiles have not.
 
-Links
------
-* [Brainstorming Round Submission](https://mozillaignite.org/ideas/212/)
-* [Project Page](https://www.cim.mcgill.ca/sre/projects/rter/)
-* [Updates](https://www.cim.mcgill.ca/sre/projects/rter/blog.html)
+The library also sets out to provide a number of other useful features:
+* Simple methods to project headings into the rendered scene
+* Methods to project lat/lng points and other objects in to scene.
+* Methods to draw over interesting features in the scene such as roads.
