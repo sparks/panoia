@@ -11,8 +11,8 @@ public class Pano {
 	PanoData data;
 	PanoPov pov;
 
-	PImage[][] tileCache;
-	PImage[] threeFoldCache;
+	public PImage[][] tileCache;
+	public PImage[] threeFoldCache;
 
 	public Pano(PApplet p) {
 		this.p = p;
@@ -53,26 +53,30 @@ public class Pano {
 
 	public void setPano(String pano) {
 		data = provider.getPanoData(pano);
-		for(int i = 0;i < tileCache.length;i++) {
-			for(int j = 0;j < tileCache[i].length;j++) {
-				tileCache[i][j] = null;
-			}
-		}
-		for(int i = 0;i < 3;i++) {
-			threeFoldCache[i] = null;
-		}
+		tileCache = new PImage[tileCache.length][tileCache[0].length];
+		threeFoldCache = new PImage[threeFoldCache.length];
+		// for(int i = 0;i < tileCache.length;i++) {
+		// 	for(int j = 0;j < tileCache[i].length;j++) {
+		// 		tileCache[i][j] = null;
+		// 	}
+		// }
+		// for(int i = 0;i < 3;i++) {
+		// 	threeFoldCache[i] = null;
+		// }
 	}
 
 	public void setPosition(LatLng latLng) {
 		data = provider.getPanoData(latLng);
-		for(int i = 0;i < tileCache.length;i++) {
-			for(int j = 0;j < tileCache[i].length;j++) {
-				tileCache[i][j] = null;
-			}
-		}
-		for(int i = 0;i < 3;i++) {
-			threeFoldCache[i] = null;
-		}
+		tileCache = new PImage[tileCache.length][tileCache[0].length];
+		threeFoldCache = new PImage[threeFoldCache.length];
+		// for(int i = 0;i < tileCache.length;i++) {
+		// 	for(int j = 0;j < tileCache[i].length;j++) {
+		// 		tileCache[i][j] = null;
+		// 	}
+		// }
+		// for(int i = 0;i < 3;i++) {
+		// 	threeFoldCache[i] = null;
+		// }
 	}
 
 	public void setPov(PanoPov pov) {

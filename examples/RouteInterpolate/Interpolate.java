@@ -27,6 +27,10 @@ public class Interpolate extends PApplet {
 	int current_step;
 	LatLng[] steps;
 
+	int cachedex = 0;
+	PImage[][][] cachecache;
+	int runer = -1;
+
 	public void setup() {
 		size(displayWidth, (int)(displayWidth/6.5f));
 
@@ -38,6 +42,11 @@ public class Interpolate extends PApplet {
 
 		current_step = 0;
 		steps = buildRoute(getXML(start, stop));
+
+		cachecache = new PImage[5][7][3];
+
+		float bearing = (float)pano.getPosition().getInitialBearing(steps[current_step+1]);
+		pano.setPov(new PanoPov(0, bearing, 0));
 
 		// breakup(50);
 		// step();
@@ -54,7 +63,7 @@ public class Interpolate extends PApplet {
 	}
 
 	public void mousePressed() {
-		step();
+		// step();
 	}
 
 	public void breakup(int subdivision) {		
@@ -80,21 +89,47 @@ public class Interpolate extends PApplet {
 		// steps = (PVector[])tmp_steps.toArray(steps);		
 	}
 
-	public void step() {
+	public boolean step() {
 		if(current_step+1 == steps.length) {
 			current_step = 0;
 			pano.setPosition(steps[0]);
+			return false;
 		} else {
 			float dist = (float)pano.getPosition().getDistance(steps[current_step+1]);
 			float bearing = (float)pano.getPosition().getInitialBearing(steps[current_step+1]);
 
 			if(dist > 10) {
+				cachecache[cachedex] = pano.tileCache;
+				cachedex++;
+				if(cachedex >= cachecache.length) cachedex = 0;
+
 				pano.setPov(new PanoPov(0, bearing, 0));
 				pano.jump();
 			} else {
 				current_step = (current_step+1)%steps.length;
 				pano.setPosition(steps[current_step]);
 			}
+			return true;
+		}
+	}
+
+	public void keyPressed() {
+		if(key == 'r') {
+			runer++;
+			if(runer >= cachedex) runer = 0;
+			pano.tileCache = cachecache[runer];
+		} else if(key == 'g') {
+			cachedex = 0;
+			
+			for(int i = 0;i < cachecache.length;i++) {
+				println(i);
+				step();
+				draw();
+			}
+
+			println("done");
+		} else if(key == 's') {
+			step();
 		}
 	}
 
@@ -103,7 +138,7 @@ public class Interpolate extends PApplet {
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
-			String urlString = "http://maps.googleapis.com/maps/api/directions/xml?origin="+start.toUrlValue()+"&destination="+stop.toUrlValue()+"&sensor=false&units=metric&mode=driving";
+			String urlString = "http://maps.googleapis.com/maps/api/directions/xml?origin="+start.toUrlValue()+"&destination="+stop.toUrlValue()+"&sensor=false&units=metric&mode=walking";
 			if(apikey != null && !apikey.equals("")) urlString += "&key="+apikey;
 
 			URL url = new URL(urlString);
