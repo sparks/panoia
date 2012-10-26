@@ -1,177 +1,146 @@
+import processing.core.*;
+
 import panoia.*;
 
 import java.io.*;
 import java.util.*;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.*;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+
+import java.net.URL;
+import java.io.InputStream;
+
 public class Interpolate extends PApplet {
-	boolean debug = true;
+
+	String apikey;
+
+	Pano pano;
+	float fov = 360;
+
+	LatLng start = new LatLng(45.537734f,-73.622578f);
+	LatLng stop = new LatLng(45.52015f,-73.583357f);
 
 	int current_step;
-	float zoom_index;
-	int blur_index;
-
-	PVector start = new PVector(45.537734f, -73.622578f);
-	PVector finish =  new PVector(45.52015f,-73.583357f);
-
-	PVector[] steps;
-
-	View view;
-	PImage[] pics = new PImage[7];
-	float yaw = 0;
+	LatLng[] steps;
 
 	public void setup() {
-		size(displayWidth, displayHeight);
-		// size(screen.height,screen.height);
-		background(0);
+		size(displayWidth, (int)(displayWidth/6.5f));
 
+		background(0);
 		smooth();
 		
-		current_step = -1;
-		zoom_index = 1;
-		blur_index = 0;
-		
-		String route_raw = streamToString(createInput("http://maps.google.com/maps/nav?q=from%2045.537734,-73.622578%20to%2045.52015,-73.583357&dirflg=w"));
-		
-		LinkedList tmp_steps = new LinkedList();
+		pano = new Pano(this);
+		pano.setPosition(start);
 
-		int index = route_raw.indexOf("coordinates");
-		for(int i = 0;index != -1;i++) {
-			if(i >= 2) {
-				int start = route_raw.indexOf(":[", index)+2;
-				int end = route_raw.indexOf(",", index);
-				float lat = Float.parseFloat(route_raw.substring(start, end));
-				
-				start = end+1;
-				end = route_raw.indexOf(",", start);
-				float lng = Float.parseFloat(route_raw.substring(start, end));
-				
-				tmp_steps.add(new PVector(lat, lng));
-			}
-			index = route_raw.indexOf("coordinates", index+1);
-		}
-		
-		steps = new PVector[0];
-		steps = (PVector[])tmp_steps.toArray(steps);
-		
-		breakup(50);
-		step();
+		current_step = 0;
+		steps = buildRoute(getXML(start, stop));
+
+		// breakup(50);
+		// step();
 	}
 
 	public void draw() {
 		background(0);
-		translate(width/2, height/2);
 
-		int start_tile = floor((6.5f-yaw/360*6.5f)%6.5f);
-		float offset = ((6.5f-yaw/360*6.5f)%6.5f-start_tile)*width/6.5f;
-		
-		for(int i = start_tile;i < 7;i++) {
-			if(pics[i] != null) image(pics[i], width/6.5f*(i-start_tile)-width/2-offset, -width/13, width/6.5f, width/6.5f);
-		}
-		
-		for(int i = 0;i < start_tile+1;i++) {
-			if(pics[i] != null) image(pics[i], width/6.5f*(i+7-start_tile)-width/2-width/13-offset, -width/13, width/6.5f, width/6.5f);
-		}
-
-		fill(255);
-		stroke(255);
-		strokeWeight(4);
-		line(0, -height/2, 0, height/2);
-		
-		
-		// fill(255);
-		// stroke(255);
-		// 
-		// strokeWeight(4);
-		// 
-		// line(((3.5f-yaw/360*7+7)%7)*width/7-width/2, -height/2, ((3.5f-yaw/360*7+7)%7)*width/7-width/2, height/2);
+		pushMatrix();
+		translate(width/2, 0);
+		// pano.drawThreeFold(width);
+		pano.drawTiles(fov, width);
+		popMatrix();
 	}
 
 	public void mousePressed() {
 		step();
 	}
 
-	public void breakup(int subdivision) {
-		if(debug) println("====Breakup====");
-		
-		float total_dist = 0;
-		for(int i = 1;i < steps.length;i++) total_dist += steps[i].dist(steps[i-1]);
+	public void breakup(int subdivision) {		
+		// float total_dist = 0;
+		// for(int i = 1;i < steps.length;i++) total_dist += steps[i].dist(steps[i-1]);
 
-		LinkedList tmp_steps = new LinkedList();
-		float unit = total_dist/(subdivision-1);
+		// LinkedList tmp_steps = new LinkedList();
+		// float unit = total_dist/(subdivision-1);
 		
-		tmp_steps.add(steps[0]);
+		// tmp_steps.add(steps[0]);
 		
-		for(int i = 1;i < steps.length;i++) {
-			while(((PVector)tmp_steps.getLast()).dist(steps[i]) > unit) {
-					PVector unit_step = PVector.sub(steps[i], (PVector)tmp_steps.getLast());
-					unit_step.normalize();
-					unit_step.mult(unit);
-					tmp_steps.add(PVector.add((PVector)tmp_steps.getLast(), unit_step));
-			}
+		// for(int i = 1;i < steps.length;i++) {
+		// 	while(((PVector)tmp_steps.getLast()).dist(steps[i]) > unit) {
+		// 			PVector unit_step = PVector.sub(steps[i], (PVector)tmp_steps.getLast());
+		// 			unit_step.normalize();
+		// 			unit_step.mult(unit);
+		// 			tmp_steps.add(PVector.add((PVector)tmp_steps.getLast(), unit_step));
+		// 	}
 
-			tmp_steps.add(steps[i]);
-		}
+		// 	tmp_steps.add(steps[i]);
+		// }
 		
-		steps = (PVector[])tmp_steps.toArray(steps);
-		
-		if(debug) {
-			println(steps.length);
-			println("===========");
-		}
+		// steps = (PVector[])tmp_steps.toArray(steps);		
 	}
 
 	public void step() {
-		(new Thread(new Runnable() {
-			
-			public void run() {
+		if(current_step+1 == steps.length) {
+			current_step = 0;
+			pano.setPosition(steps[0]);
+		} else {
+			float dist = (float)pano.getPosition().getDistance(steps[current_step+1]);
+			float bearing = (float)pano.getPosition().getInitialBearing(steps[current_step+1]);
+
+			if(dist > 10) {
+				pano.setPov(new PanoPov(0, bearing, 0));
+				pano.jump();
+			} else {
 				current_step = (current_step+1)%steps.length;
-
-				if(debug) {
-					println("->Step "+current_step);
-					println("  Lat:"+steps[current_step].x+"\tLng:"+steps[current_step].y);
-				}
-
-				view = new View(steps[current_step].y, steps[current_step].x);
-
-				PImage[] tmp_pics = new PImage[7];
-
-				for(int i = 0;i < 7;i++) {
-					if(view.getPanoIDs() != null) tmp_pics[i] = loadImage(view.getImgURL(i,1), "jpg");
-				}
-
-				zoom_index = 1;
-				blur_index = 0;
-				pics = tmp_pics;
-				yaw = view.getYaw();
-				while(yaw < 0) yaw += 360;
-				while(yaw > 360) yaw -= 360;
-				
-				step();
+				pano.setPosition(steps[current_step]);
 			}
-			
-		})).start();
+		}
 	}
 
-	String streamToString(InputStream stream) {
-		if(stream != null) {
-			try {
-				StringBuilder sb = new StringBuilder();
-				String line;
+	public Document getXML(LatLng start, LatLng stop) {
+		try	{
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+
+			String urlString = "http://maps.googleapis.com/maps/api/directions/xml?origin="+start.toUrlValue()+"&destination="+stop.toUrlValue()+"&sensor=false&units=metric&mode=driving";
+			if(apikey != null && !apikey.equals("")) urlString += "&key="+apikey;
+
+			URL url = new URL(urlString);
+
+			InputStream stream = url.openStream();
+			Document xml = docBuilder.parse(stream);
 			
-				try {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-					while((line = reader.readLine()) != null) sb.append(line).append("\n");
-				} finally {
-					stream.close();
-				}
-			
-				return sb.toString();
-			} catch(Exception e) {
-				return "";
-			}	
-		} else {
-			return "";
+			return xml;
+		} catch (Exception e) {
+			System.err.println("Panoia: Error in getXML...");
 		}
+		
+		return null;
+	}
+
+	LatLng[] buildRoute(Document xml) {
+		try {
+			//Parse Location Information and Copyright
+			NodeList latTags = xml.getElementsByTagName("lat");
+			NodeList lngTags = xml.getElementsByTagName("lng");
+
+			LatLng[] steps = new LatLng[latTags.getLength()-2];
+
+			for(int i = 0;i < steps.length;i++) {
+				float lat = Float.parseFloat(latTags.item(i).getFirstChild().getNodeValue());
+				float lng = Float.parseFloat(lngTags.item(i).getFirstChild().getNodeValue());
+
+				steps[i] = new LatLng(lat, lng);
+			}
+
+			return steps;
+		} catch(Exception e) {
+			//Probably no such street view, so ignore
+			System.err.println("Panoia: Error no such streetview or malformed streetview...");
+			return null;
+		}
+
 	}
 
 	public static void main (String [] args) {
