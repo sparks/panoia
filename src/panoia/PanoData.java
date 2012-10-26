@@ -3,17 +3,21 @@ package panoia;
 public class PanoData {
 
 	String apikey;
+
 	public PanoLink[] links;
+
 	public PanoLocation location;
 	public float centerHeading;
 	public String copyright;
 
 	public PanoData(PanoLocation location, PanoLink[] links, float centerHeading, String copyright, String apikey) {
-		this.location = location;
+		this.apikey = apikey;
+
 		this.links = links;
+
+		this.location = location;
 		this.centerHeading = centerHeading;
 		this.copyright = copyright;
-		this.apikey = apikey;
 	}
 
 	public String getTileUrl(int zoom, int tileX, int tileY) {

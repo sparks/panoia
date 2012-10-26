@@ -29,6 +29,9 @@ public class Interpolate extends PApplet {
 
 	int cachedex = 0;
 	PImage[][][] cachecache;
+	PanoData[] datacache;
+	PanoPov[] povcache;
+
 	int runer = -1;
 
 	public void setup() {
@@ -43,12 +46,13 @@ public class Interpolate extends PApplet {
 		current_step = 0;
 		steps = buildRoute(getXML(start, stop));
 
-		cachecache = new PImage[5][7][3];
+		cachecache = new PImage[90][7][3];
+		datacache = new PanoData[90];
+		povcache = new PanoPov[90];
 
 		float bearing = (float)pano.getPosition().getInitialBearing(steps[current_step+1]);
 		pano.setPov(new PanoPov(0, bearing, 0));
 
-		// breakup(50);
 		// step();
 	}
 
@@ -66,33 +70,10 @@ public class Interpolate extends PApplet {
 		// step();
 	}
 
-	public void breakup(int subdivision) {		
-		// float total_dist = 0;
-		// for(int i = 1;i < steps.length;i++) total_dist += steps[i].dist(steps[i-1]);
-
-		// LinkedList tmp_steps = new LinkedList();
-		// float unit = total_dist/(subdivision-1);
-		
-		// tmp_steps.add(steps[0]);
-		
-		// for(int i = 1;i < steps.length;i++) {
-		// 	while(((PVector)tmp_steps.getLast()).dist(steps[i]) > unit) {
-		// 			PVector unit_step = PVector.sub(steps[i], (PVector)tmp_steps.getLast());
-		// 			unit_step.normalize();
-		// 			unit_step.mult(unit);
-		// 			tmp_steps.add(PVector.add((PVector)tmp_steps.getLast(), unit_step));
-		// 	}
-
-		// 	tmp_steps.add(steps[i]);
-		// }
-		
-		// steps = (PVector[])tmp_steps.toArray(steps);		
-	}
-
 	public boolean step() {
 		if(current_step+1 == steps.length) {
-			current_step = 0;
-			pano.setPosition(steps[0]);
+			// current_step = 0;
+			// pano.setPosition(steps[0]);
 			return false;
 		} else {
 			float dist = (float)pano.getPosition().getDistance(steps[current_step+1]);
@@ -100,13 +81,16 @@ public class Interpolate extends PApplet {
 
 			if(dist > 10) {
 				cachecache[cachedex] = pano.tileCache;
+				datacache[cachedex] = pano.data;
+				povcache[cachedex] = pano.pov;
 				cachedex++;
 				if(cachedex >= cachecache.length) cachedex = 0;
 
-				pano.setPov(new PanoPov(0, bearing, 0));
 				pano.jump();
+				pano.setPov(new PanoPov(0, bearing, 0));
 			} else {
 				current_step = (current_step+1)%steps.length;
+				println("Now Step"+ current_step);
 				pano.setPosition(steps[current_step]);
 			}
 			return true;
@@ -118,6 +102,8 @@ public class Interpolate extends PApplet {
 			runer++;
 			if(runer >= cachedex) runer = 0;
 			pano.tileCache = cachecache[runer];
+			pano.data = datacache[runer];
+			pano.pov = povcache[runer];
 		} else if(key == 'g') {
 			cachedex = 0;
 			
@@ -160,11 +146,11 @@ public class Interpolate extends PApplet {
 			NodeList latTags = xml.getElementsByTagName("lat");
 			NodeList lngTags = xml.getElementsByTagName("lng");
 
-			LatLng[] steps = new LatLng[latTags.getLength()-2];
+			LatLng[] steps = new LatLng[(latTags.getLength()-2)/2];
 
 			for(int i = 0;i < steps.length;i++) {
-				float lat = Float.parseFloat(latTags.item(i).getFirstChild().getNodeValue());
-				float lng = Float.parseFloat(lngTags.item(i).getFirstChild().getNodeValue());
+				float lat = Float.parseFloat(latTags.item(i*2).getFirstChild().getNodeValue());
+				float lng = Float.parseFloat(lngTags.item(i*2).getFirstChild().getNodeValue());
 
 				steps[i] = new LatLng(lat, lng);
 			}

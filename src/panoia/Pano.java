@@ -8,15 +8,20 @@ public class Pano {
 
 	PanoProvider provider;
 
-	PanoData data;
-	PanoPov pov;
+	public PanoData data;
+	public PanoPov pov;
 
 	public PImage[][] tileCache;
 	public PImage[] threeFoldCache;
 
 	public Pano(PApplet p) {
+		this(p, null);
+	}
+
+	public Pano(PApplet p, String api) {
 		this.p = p;
-		this.provider = new PanoProvider();
+
+		provider = new PanoProvider(api);
 		pov = new PanoPov();
 
 		tileCache = new PImage[7][3];
@@ -26,18 +31,6 @@ public class Pano {
 	public PanoLink[] getLinks() {
 		return data.links;
 	}
-
-	public void jump() {
-		PanoLink closest = data.links[0];
-		for(int i = 0;i < data.links.length;i++) {
-			if(p.abs(closest.heading-pov.heading()) > p.abs(data.links[i].heading-pov.heading())) {
-				closest = data.links[i];
-			}
-		}
-
-		setPano(closest.pano);
-	}
-
 
 	public String getPano() {
 		return data.location.pano;
@@ -53,6 +46,7 @@ public class Pano {
 
 	public void setPano(String pano) {
 		data = provider.getPanoData(pano);
+
 		tileCache = new PImage[tileCache.length][tileCache[0].length];
 		threeFoldCache = new PImage[threeFoldCache.length];
 		// for(int i = 0;i < tileCache.length;i++) {
@@ -67,27 +61,38 @@ public class Pano {
 
 	public void setPosition(LatLng latLng) {
 		data = provider.getPanoData(latLng);
-		tileCache = new PImage[tileCache.length][tileCache[0].length];
 		threeFoldCache = new PImage[threeFoldCache.length];
-		// for(int i = 0;i < tileCache.length;i++) {
-		// 	for(int j = 0;j < tileCache[i].length;j++) {
-		// 		tileCache[i][j] = null;
-		// 	}
-		// }
-		// for(int i = 0;i < 3;i++) {
-		// 	threeFoldCache[i] = null;
-		// }
+
+		clearTileCache();
+		clearThreeFoldCache();
 	}
 
 	public void setPov(PanoPov pov) {
 		this.pov = pov;
-		for(int i = 0;i < 3;i++) {
-			threeFoldCache[i] = null;
-		}
+		clearThreeFoldCache();
+	}
+
+	void clearTileCache() {
+		tileCache = new PImage[tileCache.length][tileCache[0].length];
+	}
+
+	void clearThreeFoldCache() {
+		threeFoldCache = new PImage[threeFoldCache.length];
 	}
 
 	public PanoData getPanoData() {
 		return data;
+	}
+
+	public void jump() {
+		PanoLink closest = data.links[0];
+		for(int i = 0;i < data.links.length;i++) {
+			if(p.abs(closest.heading-pov.heading()) > p.abs(data.links[i].heading-pov.heading())) {
+				closest = data.links[i];
+			}
+		}
+
+		setPano(closest.pano);
 	}
 
 	public int headingToPixel(float heading, float fov, int imageWidth) {
