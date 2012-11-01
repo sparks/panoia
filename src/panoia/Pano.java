@@ -14,14 +14,17 @@ public class Pano {
 	public PImage[][] tileCache;
 	public PImage[] threeFoldCache;
 
+	public String apikey;
+
 	public Pano(PApplet p) {
 		this(p, null);
 	}
 
-	public Pano(PApplet p, String api) {
+	public Pano(PApplet p, String apikey) {
 		this.p = p;
+		this.apikey = apikey;
 
-		provider = new PanoProvider(api);
+		provider = new PanoProvider(apikey);
 		pov = new PanoPov();
 
 		tileCache = new PImage[7][3];
