@@ -59,7 +59,7 @@ public class Interpolate extends PApplet {
 		datacache = new PanoData[cache_size];
 		povcache = new PanoPov[cache_size];
 		
-		pano = new Pano(this);
+		pano = new Pano(this, "AIzaSyDklHrdigHKgVYzrDAvSXaaR6Epx1_cygQ");
 		pano.setPosition(start);
 
 		float bearing = (float)pano.getPosition().getInitialBearing(steps[(current_step+1)%steps.length]);
